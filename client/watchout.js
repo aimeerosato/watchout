@@ -6,6 +6,37 @@ var width = 850;
 var enemyR = 10;
 var playerR = 5;
 
+var ScoreKeeper = function () {
+  // high score keeper
+  this.highScore = 0;
+  this.score = 0;
+  this.collision = 0;
+
+};
+
+var collided;
+
+ScoreKeeper.prototype.currentScore = function() {
+  this.score++;
+  this.highScoreUpdate();
+  d3.selectAll('.current').text(this.score);
+};
+
+ScoreKeeper.prototype.collisionUpdate = function() {
+  this.score = 0;
+  this.collision++;
+  d3.selectAll('.collisions').text(this.collision);
+};
+
+ScoreKeeper.prototype.highScoreUpdate = function() {
+  if(this.score > this.highScore){
+    this.highScore = this.score;
+    d3.selectAll('.high').text(this.score);
+  }
+};
+
+var scoreBoard = new ScoreKeeper();
+
 // Create board
 var gameBoard = d3.select("body").append("svg:svg").attr("width", width).attr("height", height);
 gameBoard.transition().style("color", "red");
@@ -42,25 +73,17 @@ var collisionDetector = function () {
     var finalDistance = Math.sqrt(distance);
     // Check if there's a collision 
     // distance between player and enemy less than sum of their radii
-    if( finalDistance < (playerR + enemyR)){
+    if( finalDistance < (playerR + enemyR) && !collided){
       // change the score
-      // update collision board
+      scoreBoard.collisionUpdate();
+      collided = true;
+    } else {
+      scoreBoard.currentScore();
     }
   };
 };
 
-var scoreKeeper = function () {
-  // high score keeper
 
-  // current score keeper (needs to know about collisions)
-
-  //increases quickly by 1 every second no collisions
-
-  //if collision, reset to 0
-    //check if that score is older than old high score
-      //if it is, becomes the new high score
-      
-};
 
 var update = function(data){
     var enemyData = makeEnemies(10);
@@ -76,6 +99,7 @@ var update = function(data){
 
 // Makes the enemies move on a set interval
 setInterval(function(){
+  collided = false;
   update();
 }, 1000);
 
@@ -102,19 +126,19 @@ var player = gameBoard.selectAll("player")
 
 
 // factory method passed to tween
-var newCoordinates = function (currentData){
-  var enemy = d3.select(this);
-   var startPos = {    
-   x : parseFloat(enemy.attr("cx")),
-   y : parseFloat(enemy.attr("cy")) 
-  };
+// var newCoordinates = function (currentData){
+//   var enemy = d3.select(this);
+//    var startPos = {    
+//    x : parseFloat(enemy.attr("cx")),
+//    y : parseFloat(enemy.attr("cy")) 
+//   };
 
-  return function(t) { 
-  var newX = startPos.x + (currentData.x - startPos.x) * t;
-  var newY = startPos.y + (currentData.y - startPos.y) * t;
+//   return function(t) { 
+//   var newX = startPos.x + (currentData.x - startPos.x) * t;
+//   var newY = startPos.y + (currentData.y - startPos.y) * t;
 
-    return enemy.attr("cx", newX).attr("cy", newY);
-  };
+//     return enemy.attr("cx", newX).attr("cy", newY);
+//   };
 
 //create player
 // var Player = function () {
@@ -126,10 +150,7 @@ var newCoordinates = function (currentData){
 // Player.prototype.
 
 
-//create methods update score board and game
-checkForCollisions = function() {
-  
-};
+
 
 
 //create function that organizes play

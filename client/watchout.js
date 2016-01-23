@@ -4,7 +4,7 @@ var height = 850;
 var width = 850;
 // Create board
 var gameBoard = d3.select("body").append("svg:svg").attr("width", width).attr("height", height);
-
+gameBoard.transition().style("color", "red");
 //Creating enemies
 var xScale = d3.scale.linear().domain([0,1]).range([0, width]);
 var yScale = d3.scale.linear().domain([0,1]).range([0, height]);
@@ -23,16 +23,34 @@ var makeEnemies = function(number){
 //ok to pass in make enemies
 //creates circle enmies with a class of enemy
 // Update
-var enemyData = makeEnemies(10);
-var enemies = gameBoard.selectAll("circle.enemy").data(enemyData, function(d){return d.id});
-                
+  var enemyData = makeEnemies(10);
+   var enemies = gameBoard.selectAll("circle.enemy").data(enemyData);  
+// // Enter
+//   enemies.enter().append('svg:circle')
+//                  .attr('cx', function(enemy) { return enemy.x; })
+//                     .attr('cy', function(enemy) { return enemy.y; })
+//                      .attr('r', 10); 
+//  enemies.exit().remove();
 
-enemies.enter().append('svg:circle')
-        .attr('cx', function(enemy) { return enemy.x; })
-                .attr('cy', function(enemy) { return enemy.y; })
-                .attr('r', 10).transition().duration(500).tween("custom", newCoordinates);
+  
+ var enemyData = makeEnemies(10);
+  var update = function(data){
+    
+    var enemies = gameBoard.selectAll("circle.enemy").data(enemyData);  
 
-enemies.exit().remove();
+    enemies.enter().insert('svg:circle').attr('cx', function(enemy) { return enemy.x; })
+                    .attr('cy', function(enemy) { return enemy.y; })
+                    .attr('r', 10); 
+    enemies.exit().remove();
+
+};
+// update();
+// update();
+setInterval(function(){
+  
+  update(enemies.transition().duration(500).attr('cx', function(enemy) { return enemy.x; })
+                                          .attr('cy', function(enemy) { return enemy.y; }));
+}, 1000);
 
 // factory method passed to tween
 var newCoordinates = function (currentData){
@@ -53,11 +71,19 @@ var newCoordinates = function (currentData){
 };
 
 //create player
+var Player = function () {
+  var score = 0;
+  var highScore = 0;
+  var position = [];
+};
+
+Player.prototype.
 
 
-
-//create methods update score board
-
+//create methods update score board and game
+checkForCollisions = function() {
+  
+};
 
 
 //create function that organizes play

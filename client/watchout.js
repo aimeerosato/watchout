@@ -3,11 +3,12 @@
 var height = 850;
 var width = 850;
 
-var enemyR = 10;
-var playerR = 5;
+var enemyR = 15;
+var playerR = 10;
+
+var numEnemies = 30;
 
 var ScoreKeeper = function () {
-  // high score keeper
   this.highScore = 0;
   this.score = 0;
   this.collision = 0;
@@ -85,23 +86,25 @@ var collisionDetector = function () {
 
 
 
-var update = function(data){
-    var enemyData = makeEnemies(10);
+var update = function(element){
+    collided = false;
+    var enemyData = makeEnemies(numEnemies);
     var enemies = gameBoard.selectAll("circle.enemy").data(enemyData);  
     enemies.enter().append('svg:circle').attr("class", "enemy");
-    enemies.transition().duration(500).tween("collisions", collisionDetector).attr('cx', function(enemy) { return enemy.x; })
+    enemies.transition().duration(1000).tween("collisions", collisionDetector).attr('cx', function(enemy) { return enemy.x; })
                     .attr('cy', function(enemy) { return enemy.y; })
-                    .attr('r', enemyR); 
+                    .attr('r', enemyR)
+                    .each("end", function(){update(d3.select(this));}); 
 
-    enemies.exit().remove();
 
 };
 
+
 // Makes the enemies move on a set interval
-setInterval(function(){
-  collided = false;
-  update();
-}, 1000);
+// setInterval(function(){
+//   collided = false;
+//   update();
+// }, 1000);
 
 
 // Drag functionality
@@ -124,6 +127,8 @@ var player = gameBoard.selectAll("player")
              .attr("fill", "red");
 
 
+
+update();
 
 // factory method passed to tween
 // var newCoordinates = function (currentData){
